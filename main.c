@@ -1,16 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-
-void main()
+int main()
 {
     //Variables
-    char letter;
-    char *randWord;
+    const char *randWord;
     int guesses = 5;
+    char *found;
+    int numCorrect = 0;
+    int oldCorrect = 0;
+    int reguessed;
+
 
     //Words
-    char words [5][8] =
+    char words [][10] =
     {
         "chair",
         "table",
@@ -23,33 +27,56 @@ void main()
     };
 
     //Pick a random word
-    int randVal = rand()%(sizeof(words)-1 + 1) + 1;
+    int randVal = rand()%(7-1 + 1) + 1;
     randWord = words[randVal];
+    printf("%s %d\n", randWord, randVal); //Show word for testing purposes
 
-    printf("%s %d\n", randWord, randVal);
+    //get word length
+    char str[8];
+    strcpy(str, randWord);
+    int lengthWord = strlen(str);
 
-    /*for (int i = 5; i>=1; i--)
+    //store letters guesses
+    char letterEntered;
+    int letterGuessed[8] = { 0,0,0,0,0,0,0,0 };
+
+
+    //Let user guess a letter
+    while ((letterEntered = getchar()) != EOF && guesses > 0)
     {
-        printf("You have %d guesses left\n", i);
-
-        printf("Pick a letter:");
-        letter = getchar();
-
-        printf("You entered: ");
-        putchar(letter);
-    }*/
-
-    while ((letter = getchar()) != EOF && guesses > 0)
-    {
-        if (letter != 0x0Ad)
+        printf("hangman word: ");
+        for (int i = 0; i < lengthWord; i++)
         {
-            printf("%d guesses left\n", guesses);
-            printf("You entered: %c\n", letter);
-            guesses--;
+            if (letterGuessed[i] == 1)
+            {
+                printf("%c",words[randVal][i]);
+            }
+            else
+            {
+                printf("_ ");
+            }
+        } printf("\n");
+
+
+        if (letterEntered != 0x0Ad) //ENTER key
+        {
+            found = strchr(randWord, letterEntered);
+
+            if (found)
+            {
+
+                printf("Found %c in word %s\n", letterEntered, randWord);
+            }
+            else
+            {
+                printf("Letter not found in word\n");
+                guesses--;
+            }
         }
-        letter = fgetc(stdin);
+        letterEntered = fgetc(stdin);
+        printf("%d guesses left\n", guesses);
 
     }
-    printf("No guesses left, you lost");
-
+    printf("No guesses left, you lost\n");
+    printf("The word was: %s", randWord);
 }
